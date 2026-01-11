@@ -1,17 +1,48 @@
 /**
- * Below are the colors that are used in the app. The colors are defined in the light and dark mode.
- * There are many other ways to style your app. For example, [Nativewind](https://www.nativewind.dev/), [Tamagui](https://tamagui.dev/), [unistyles](https://reactnativeunistyles.vercel.app), etc.
+ * Application Theme Colors
+ * Main Theme: Light Color (Sky Blue/Teal)
  */
 
-import { Platform } from 'react-native';
+const PRIMARY_COLOR = '#40E0D0'; // Turquoise - Light & Fresh
+const SECONDARY_COLOR = '#4facfe'; // Light Blue gradient feel
+const ACCENT_COLOR = '#FF6B6B'; // Soft Red for actions/errors
 
-const tintColorLight = '#0a7ea4';
+export const COLORS = {
+  primary: PRIMARY_COLOR,
+  secondary: SECONDARY_COLOR,
+  accent: ACCENT_COLOR,
+
+  // Backgrounds
+  background: '#F0F4F8',
+  surface: '#FFFFFF',
+
+  // Text
+  text: '#2D3748',
+  textLight: '#718096',
+  textInverted: '#FFFFFF',
+
+  // Status
+  success: '#48BB78',
+  error: '#F56565',
+  warning: '#ED8936',
+
+  // UI Elements
+  border: '#E2E8F0',
+  placeholder: '#A0AEC0',
+
+  // Gradients
+  gradientStart: '#40E0D0',
+  gradientEnd: '#4facfe',
+};
+
+// Backwards compatibility for Expo Router template
+const tintColorLight = PRIMARY_COLOR;
 const tintColorDark = '#fff';
 
 export const Colors = {
   light: {
-    text: '#11181C',
-    background: '#fff',
+    text: COLORS.text,
+    background: COLORS.background,
     tint: tintColorLight,
     icon: '#687076',
     tabIconDefault: '#687076',
@@ -27,27 +58,44 @@ export const Colors = {
   },
 };
 
-export const Fonts = Platform.select({
-  ios: {
-    /** iOS `UIFontDescriptorSystemDesignDefault` */
-    sans: 'system-ui',
-    /** iOS `UIFontDescriptorSystemDesignSerif` */
-    serif: 'ui-serif',
-    /** iOS `UIFontDescriptorSystemDesignRounded` */
-    rounded: 'ui-rounded',
-    /** iOS `UIFontDescriptorSystemDesignMonospaced` */
-    mono: 'ui-monospace',
+export const SHADOWS = {
+  small: {
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 3,
+    elevation: 2,
   },
-  default: {
-    sans: 'normal',
-    serif: 'serif',
-    rounded: 'normal',
-    mono: 'monospace',
+  medium: {
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.15,
+    shadowRadius: 6,
+    elevation: 4,
   },
-  web: {
-    sans: "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif",
-    serif: "Georgia, 'Times New Roman', serif",
-    rounded: "'SF Pro Rounded', 'Hiragino Maru Gothic ProN', Meiryo, 'MS PGothic', sans-serif",
-    mono: "SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace",
-  },
-});
+};
+
+export const SIZES = {
+  padding: 20,
+  radius: 12,
+};
+
+// Scale utilities for responsive design
+export const SCALE = {
+  xs: 4,
+  sm: 8,
+  md: 12,
+  lg: 16,
+  xl: 20,
+  xxl: 24,
+};
+
+// Font sizes
+export const FONT_SIZES = {
+  xs: 10,
+  sm: 12,
+  md: 14,
+  lg: 16,
+  xl: 18,
+  xxl: 24,
+};
