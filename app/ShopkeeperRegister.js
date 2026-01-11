@@ -1,4 +1,5 @@
 import { shopkeeperRegister } from '@/Services/authservice';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Location from 'expo-location';
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
@@ -18,7 +19,6 @@ import {
 import { moderateScale, scale, verticalScale } from 'react-native-size-matters';
 import { COLORS } from '../constants/theme';
 import MapSearch from '../src/components/MapSearch';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const ShopkeeperRegister = () => {
   const router = useRouter();
@@ -31,6 +31,9 @@ const ShopkeeperRegister = () => {
   const [locationText, setLocationText] = useState('');
   const [locationCoords, setLocationCoords] = useState(null);
   const [loading, setLoading] = useState(false);
+
+  // Product details state
+  const [products, setProducts] = useState([{ name: '', price: '', quantity: '', description: '' }]);
 
   // Function to handle location selection from map
   const handleLocationSelect = async (location) => {
@@ -54,6 +57,25 @@ const ShopkeeperRegister = () => {
       latitude: lat,
       longitude: lng
     });
+  };
+
+  // Functions to manage products
+  const addProduct = () => {
+    setProducts([...products, { name: '', price: '', quantity: '', description: '' }]);
+  };
+
+  const removeProduct = (index) => {
+    if (products.length > 1) {
+      const newProducts = [...products];
+      newProducts.splice(index, 1);
+      setProducts(newProducts);
+    }
+  };
+
+  const updateProduct = (index, field, value) => {
+    const newProducts = [...products];
+    newProducts[index][field] = value;
+    setProducts(newProducts);
   };
 
   const handleGetCurrentLocation = async () => {
@@ -104,6 +126,13 @@ const ShopkeeperRegister = () => {
       return;
     }
 
+    // Validate products if any are added
+    const validProducts = products.filter(product => product.name && product.price);
+    if (validProducts.length === 0) {
+      Alert.alert('Error', 'Please add at least one product');
+      return;
+    }
+
     setLoading(true);
     try {
       const data = await shopkeeperRegister(
@@ -115,7 +144,8 @@ const ShopkeeperRegister = () => {
         {
           address: locationText,
           latitude: locationCoords.latitude,
-          longitude: locationCoords.longitude
+          longitude: locationCoords.longitude,
+          products: validProducts // Include products in registration
         }
       );
       if (data.success) {
@@ -254,6 +284,90 @@ const ShopkeeperRegister = () => {
                   secureTextEntry
                 />
               </View>
+              
+              {/* Product Details Section */}
+              <Text style={styles.sectionTitle}>Initial Products</Text>
+              <Text style={styles.sectionSubtitle}>Add your shop's initial products</Text>
+              
+              {products.map((product, index) => (
+                <View key={index} style={styles.productContainer}>
+                  <View style={styles.productHeader}>
+                    <Text style={styles.productNumber}>Product {index + 1}</Text>
+                    {products.length > 1 && (
+                      <TouchableOpacity onPress={() => removeProduct(index)} style={styles.removeProductButton}>
+                        <Text style={styles.removeProductText}>Remove</Text>
+                      </TouchableOpacity>
+                    )}
+                  </View>
+                  
+                  <View style={styles.productRow}>
+                    <View style={styles.halfInputContainer}>
+                      <Text style={styles.label}>Product Name</Text>
+                      <TextInput
+                        style={styles.input}
+                        value={product.name}
+                        onChangeText={(value) => updateProduct(index, 'name', value)}
+                        placeholder="Enter product name"
+                        placeholderTextColor={COLORS.placeholder}
+                      />
+                    </View>
+                    
+                    <View style={styles.halfInputContainer}>
+                      <Text style={styles.label}>Price (₹)</Text>
+                      <TextInput
+                        style={styles.input}
+                        value={product.price}
+                        onChangeText={(value) => updateProduct(index, 'price', value)}
+                        placeholder="0.00"
+                        placeholderTextColor={COLORS.placeholder}
+                        keyboardType="numeric"
+                      />
+                    </View>
+                  </View>
+                  
+                  <View style={styles.productRow}>
+                    <View style={styles.halfInputContainer}>
+                      <Text style={styles.label}>Quantity</Text>
+                      <TextInput
+                        style={styles.input}
+                        value={product.quantity}
+                        onChangeText={(value) => updateProduct(index, 'quantity', value)}
+                        placeholder="0"
+                        placeholderTextColor={COLORS.placeholder}
+                        keyboardType="numeric"
+                      />
+                    </View>
+                    
+                    <View style={styles.halfInputContainer}>
+                      <Text style={styles.label}>Category</Text>
+                      <TextInput
+                        style={styles.input}
+                        value={product.category || ''}
+                        onChangeText={(value) => updateProduct(index, 'category', value)}
+                        placeholder="e.g., Grocery"
+                        placeholderTextColor={COLORS.placeholder}
+                      />
+                    </View>
+                  </View>
+                  
+                  <View style={styles.inputContainer}>
+                    <Text style={styles.label}>Description</Text>
+                    <TextInput
+                      style={[styles.input, styles.descriptionInput]}
+                      value={product.description}
+                      onChangeText={(value) => updateProduct(index, 'description', value)}
+                      placeholder="Product description"
+                      placeholderTextColor={COLORS.placeholder}
+                      multiline
+                      numberOfLines={3}
+                    />
+                  </View>
+                </View>
+              ))}
+              
+              <TouchableOpacity style={styles.addButton} onPress={addProduct}>
+                <Text style={styles.addButtonText}>+ Add Another Product</Text>
+              </TouchableOpacity>
               
               <TouchableOpacity 
                 style={styles.registerButton} 
@@ -435,6 +549,73 @@ const styles = StyleSheet.create({
   },
   dualLoginLinkText: {
     color: COLORS.accent,
+    fontWeight: 'bold',
+  },
+  sectionTitle: {
+    fontSize: moderateScale(18),
+    fontWeight: 'bold',
+    color: COLORS.text,
+    marginTop: verticalScale(20),
+    marginBottom: verticalScale(5),
+  },
+  sectionSubtitle: {
+    fontSize: moderateScale(14),
+    color: COLORS.textLight,
+    marginBottom: verticalScale(15),
+    marginLeft: scale(4),
+  },
+  productContainer: {
+    backgroundColor: '#F8FAFC',
+    borderRadius: moderateScale(12),
+    padding: scale(15),
+    marginBottom: verticalScale(15),
+    borderWidth: 1,
+    borderColor: COLORS.border,
+  },
+  productHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: verticalScale(10),
+  },
+  productNumber: {
+    fontSize: moderateScale(16),
+    fontWeight: 'bold',
+    color: COLORS.primary,
+  },
+  removeProductButton: {
+    backgroundColor: COLORS.error,
+    paddingHorizontal: scale(10),
+    paddingVertical: verticalScale(5),
+    borderRadius: moderateScale(6),
+  },
+  removeProductText: {
+    color: 'white',
+    fontSize: moderateScale(12),
+    fontWeight: 'bold',
+  },
+  productRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: verticalScale(15),
+  },
+  halfInputContainer: {
+    width: '48%',
+  },
+  descriptionInput: {
+    height: verticalScale(80),
+    textAlignVertical: 'top',
+  },
+  addButton: {
+    backgroundColor: COLORS.success,
+    padding: verticalScale(12),
+    borderRadius: moderateScale(10),
+    alignItems: 'center',
+    marginBottom: verticalScale(15),
+  },
+  addButtonText: {
+    color: 'white',
+    fontSize: moderateScale(15),
     fontWeight: 'bold',
   },
   mapContainer: {

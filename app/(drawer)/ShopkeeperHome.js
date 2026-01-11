@@ -39,7 +39,7 @@ const ShopkeeperHome = () => {
       nameEnglish: 'Add Product',
       icon: 'add-circle',
       color: COLORS.success,
-      navigateTo: '/AddProduct'
+      navigateTo: '/AddProduct?shopId=current-shopkeeper-shop' // TODO: Replace with actual shopkeeper's shop ID
     },
     {
       id: 3,

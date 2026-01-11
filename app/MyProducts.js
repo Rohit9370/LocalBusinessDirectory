@@ -2,16 +2,16 @@ import { getShopProducts } from '@/Services/productService';
 import { useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
 import {
-    ActivityIndicator,
-    Alert,
-    FlatList,
-    RefreshControl,
-    SafeAreaView,
-    StatusBar,
-    StyleSheet,
-    Text,
-    TouchableOpacity,
-    View
+  ActivityIndicator,
+  Alert,
+  FlatList,
+  RefreshControl,
+  SafeAreaView,
+  StatusBar,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View
 } from 'react-native';
 import { moderateScale, scale, verticalScale } from 'react-native-size-matters';
 import { COLORS, SHADOWS } from '../constants/theme';
@@ -26,10 +26,12 @@ const MyProducts = () => {
     loadProducts();
   }, []);
 
+  // In a real app, shopId would come from route params or auth context
+  // For now using a placeholder
+  const shopId = 'current-shopkeeper-shop'; // TODO: Replace with actual shopkeeper's shop ID
+
   const loadProducts = async () => {
     try {
-      // In a real app, we would get the shop ID from context or navigation params
-      const shopId = 'demo-shop-id';
       const response = await getShopProducts(shopId);
       setProducts(response);
     } catch (error) {
@@ -88,7 +90,7 @@ const MyProducts = () => {
         <Text style={styles.headerTitle}>My Products</Text>
         <TouchableOpacity 
           style={styles.addButton}
-          onPress={() => router.push('/AddProduct')}
+          onPress={() => router.push('/AddProduct?shopId=current-shopkeeper-shop')} // TODO: Replace with actual shopkeeper's shop ID
         >
           <Text style={styles.addButtonText}>+ Add</Text>
         </TouchableOpacity>
@@ -111,7 +113,7 @@ const MyProducts = () => {
           <Text style={styles.emptySubtext}>Add your first product to get started</Text>
           <TouchableOpacity 
             style={styles.primaryButton}
-            onPress={() => router.push('/AddProduct')}
+            onPress={() => router.push('/AddProduct?shopId=current-shopkeeper-shop')} // TODO: Replace with actual shopkeeper's shop ID
           >
             <Text style={styles.primaryButtonText}>Add Product</Text>
           </TouchableOpacity>

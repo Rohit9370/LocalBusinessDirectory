@@ -1,4 +1,6 @@
+import { account } from '@/lib/appwrite'; // Import the account service to check sessions
 import { adminLogin, setAuthToken, shopkeeperLogin } from '@/Services/authservice';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
 import {
@@ -17,8 +19,6 @@ import {
 } from 'react-native';
 import { moderateScale, scale, verticalScale } from 'react-native-size-matters';
 import { COLORS } from '../constants/theme';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { account } from '@/lib/appwrite'; // Import the account service to check sessions
 
 const { width } = Dimensions.get('window');
 
